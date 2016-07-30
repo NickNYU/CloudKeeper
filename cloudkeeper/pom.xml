@@ -13,7 +13,14 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
+  
+  <repositories>
+	<repository>
+		<id>Jsch</id>
+		<url>http://jsch.sf.net/maven2/</url>
+	</repository>
+  </repositories>
+  
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -43,13 +50,13 @@
 	  <type>pom</type>
 	</dependency>
 	
-	<!--<dependency>
+	<dependency>
 	  <groupId>org.apache.curator</groupId>
 	  <artifactId>curator-test</artifactId>
 	  <version>2.11.0</version>
 	  <type>pom</type>
 	</dependency>
-	-->
+	
 	
 	<!-- <dependency>
 	  <groupId>org.apache.curator</groupId>
@@ -92,6 +99,16 @@
 	    <artifactId>jersey-client</artifactId>
 	    <version>2.23.1</version>
 	</dependency>
+	
+	<dependency>
+        <groupId>com.jcraft</groupId>
+    	<artifactId>jsch</artifactId>
+    	<version>0.1.44</version>
+    	<scope>compile</scope>
+    </dependency>
+	
     
   </dependencies>
+  
+  
 </project>
