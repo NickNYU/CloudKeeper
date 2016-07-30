@@ -4,6 +4,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.api.CuratorEvent;
+import org.apache.curator.framework.api.CuratorListener;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 
@@ -30,8 +32,10 @@ public class VROEvents {
             public void nodeChanged() throws Exception {
                 byte[] payload = client.getData().forPath(path);
                 System.out.println(payload.toString());
+                System.out.println("Nick Watcher Test");
             }
         };
-        nodeCache.getListenable().addListener(listener, pool);
+        nodeCache.getListenable().addListener(listener);//, pool);
+        
     }
 }
