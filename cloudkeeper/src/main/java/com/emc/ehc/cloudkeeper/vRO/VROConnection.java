@@ -2,7 +2,6 @@ package com.emc.ehc.cloudkeeper.vRO;
 
 import com.emc.ehc.cloudkeeper.connection.Connection;
 import com.emc.ehc.cloudkeeper.connection.SSHConnection;
-import com.emc.ehc.cloudkeeper.exception.ConnectionException;
 
 /**
 * @author Nick Zhu E-mail: nick.zhu@emc.com
@@ -26,13 +25,13 @@ public class VROConnection extends Connection {
     
     
     @Override
-    public void connect() throws ConnectionException {
+    public void connect() {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void close() throws ConnectionException {
+    public void close() {
         // TODO Auto-generated method stub
         
     }
