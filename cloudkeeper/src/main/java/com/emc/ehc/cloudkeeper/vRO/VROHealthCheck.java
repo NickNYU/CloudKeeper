@@ -18,7 +18,7 @@ import com.emc.ehc.cloudkeeper.client.factory.ZooKeeperClientUtil;
 * @version build time：Jul 31, 2016 10:41:12 PM
 * 
 */
-public class VROHealthCheck implements Callable<Boolean> {
+public class VROHealthCheck implements Runnable {
     CuratorFramework client;
     VROConnection vROConnection;
 
@@ -28,7 +28,7 @@ public class VROHealthCheck implements Callable<Boolean> {
         this.vROConnection = vROConnection;
     }
 
-    public Boolean call() {
+    public void run() {
 
         while (true) {
 
@@ -44,9 +44,10 @@ public class VROHealthCheck implements Callable<Boolean> {
                 Response response = rsClient
                         .target("https://" + hostPort + "/vco/api/about")
                         .request(MediaType.APPLICATION_XML).get();
-
+                System.out.println("Nick Test");
+                System.out.println(response.getStatus());
                 if (response.getStatus() != 200) {
-                    String path = "/EHC/dev19/vRO/" + vROConnection.getHost();
+					String path = "/EHC/dev19/vRO/" + vROConnection.getHost() + "/Config";
                     client.setData().forPath(path, "false".getBytes());
                 } else {
                     String path = "/EHC/dev19/vRO/Config";
@@ -61,8 +62,14 @@ public class VROHealthCheck implements Callable<Boolean> {
                 Thread.sleep(5000);
 
             } catch (Exception e) {
-               
-
+            	String path = "/EHC/dev19/vRO/" + vROConnection.getHost() + "/Config";
+                try {
+					client.setData().forPath(path, "false".getBytes());
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            	//throw new RuntimeException(e.getMessage());
             }
 
         }
