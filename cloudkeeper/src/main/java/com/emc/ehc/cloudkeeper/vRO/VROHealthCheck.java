@@ -28,7 +28,7 @@ public class VROHealthCheck implements Callable<Boolean> {
         this.vROConnection = vROConnection;
     }
 
-    public Boolean call() {
+    public Boolean call() throws Exception {
 
         while (true) {
 
@@ -61,7 +61,8 @@ public class VROHealthCheck implements Callable<Boolean> {
                 Thread.sleep(5000);
 
             } catch (Exception e) {
-               
+                String path = "/EHC/dev19/vRO/" + vROConnection.getHost();
+                client.setData().forPath(path, "false".getBytes());
 
             }
 
