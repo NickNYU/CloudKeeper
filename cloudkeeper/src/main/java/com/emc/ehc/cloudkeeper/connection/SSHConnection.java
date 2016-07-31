@@ -25,7 +25,7 @@ public class SSHConnection extends Connection {
     private Session session;
     private JSch jsch = new JSch();
 
-    // private static Logger logger = LoggerFactory.getLogger(SSHConnection.class);
+    private static Logger logger = LoggerFactory.getLogger(SSHConnection.class);
 
     public SSHConnection() {
         super();
@@ -47,10 +47,25 @@ public class SSHConnection extends Connection {
             ((ChannelExec) channel).setErrStream(System.err);
             InputStream in = channel.getInputStream();
             channel.connect();
+            byte[] tmp=new byte[1024];
+            while(true){
+              while(in.available()>0){
+                int i=in.read(tmp, 0, 1024);
+                if(i<0)break;
+                System.out.print(new String(tmp, 0, i));
+              }
+              if(channel.isClosed()){
+                if(in.available()>0) continue; 
+                System.out.println("exit-status: "+channel.getExitStatus());
+                break;
+              }
+              try{Thread.sleep(1000);}catch(Exception ee){}
+            }
         } catch (Exception e) {
             // TODO: handle exception
         } finally {
             channel.disconnect();
+            close();
         }
     }
 
@@ -62,7 +77,7 @@ public class SSHConnection extends Connection {
             session.setPassword(password);
             session.connect();
         } catch (JSchException e) {
-            // logger.error(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 
