@@ -32,25 +32,17 @@ public class TestVROConnectionFail {
         
         CuratorFramework client = ClientFactory.getSimpleClient("127.0.0.1:2181");
         client.start();
-        ZooKeeperClientUtil.createNode(client, "/EHC/dev19/vRO/");
+        ZooKeeperClientUtil.createNode(client, "/EHC/dev19/vRO/10.103.201.79");
         
-        ExecutorService threadPool = Executors.newFixedThreadPool(5);
-
-        Set<Callable<Boolean>>  callables = new HashSet<Callable<Boolean>>();
-
-                    
-        callables.add(new VROHealthCheck(client, vROConnection));
+        registerWatcher(vROConnection, client);
         
-        List<Future<Boolean>> futures = threadPool.invokeAll(callables);
-        while (!futures.isEmpty())
-        {
-            ;;
-        }
+        new Thread(new VROHealthCheck(client, vROConnection)).start();
+        
     }
     
     public static void registerWatcher(VROConnection vROConnection, CuratorFramework client) throws Exception {
         
-        String path = "/EHC/dev19/vRO/" + vROConnection.getHost();
+        String path = "/EHC/dev19/vRO/" + vROConnection.getHost() + "/Config";
         ZooKeeperClientUtil.createNode(client, path, "true".getBytes());
         
         vROConnection.getvROWatcher().vROServiceShutDown(client, path);
