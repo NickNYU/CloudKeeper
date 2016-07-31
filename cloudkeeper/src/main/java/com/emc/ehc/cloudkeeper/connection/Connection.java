@@ -22,42 +22,42 @@ public abstract class Connection {
     protected Connection() {
     }
 
-    protected void setHost(String host) {
+    public void setHost(String host) {
         this.host = host;
     }
 
-    protected String getUsername() {
+    public String getUsername() {
         return username;
     }
 
-    protected void setUsername(String username) {
+    public void setUsername(String username) {
         this.username = username;
     }
 
-    protected void setPort(int port) {
+    public void setPort(int port) {
         this.port = port;
     }
 
-    protected void setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    protected String getHost() {
+    public String getHost() {
         return host;
     }
 
-    protected int getPort() {
+    public int getPort() {
         return port;
     }
 
-    protected String getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    protected abstract void connect();
+    public abstract void connect();
 
-    protected abstract void close();
+    public abstract void close();
 
-    protected abstract boolean isConnected();
+    public abstract boolean isConnected();
 
 }
