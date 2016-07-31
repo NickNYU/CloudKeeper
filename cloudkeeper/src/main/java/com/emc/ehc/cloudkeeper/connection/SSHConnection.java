@@ -36,14 +36,14 @@ public class SSHConnection extends Connection {
     }
 
     public void exec(String cmd) {
-        if (!isConnected()) {
+        if (session == null || !isConnected()) {
             connect();
         }
         Channel channel = null;
         try {
             channel = session.openChannel("exec");
             ((ChannelExec) channel).setCommand(cmd);
-            channel.setInputStream(null);
+            //channel.setInputStream(null);
             ((ChannelExec) channel).setErrStream(System.err);
             InputStream in = channel.getInputStream();
             channel.connect();
@@ -64,7 +64,7 @@ public class SSHConnection extends Connection {
         } catch (Exception e) {
             // TODO: handle exception
         } finally {
-            channel.disconnect();
+            //channel.disconnect();
             close();
         }
     }
@@ -75,6 +75,11 @@ public class SSHConnection extends Connection {
         try {
             session = jsch.getSession(super.username, super.host, super.port);
             session.setPassword(password);
+            
+            java.util.Properties config = new java.util.Properties(); 
+            config.put("StrictHostKeyChecking", "no");
+            session.setConfig(config);
+            
             session.connect();
         } catch (JSchException e) {
             logger.error(e.getMessage());
