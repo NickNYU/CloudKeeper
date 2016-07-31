@@ -35,7 +35,7 @@ public class SSHConnection extends Connection {
         super(host, PORT, username, password);
     }
 
-    public void exec(String cmd) {
+    public String exec(String cmd) {
         if (session == null || !isConnected()) {
             connect();
         }
@@ -43,30 +43,40 @@ public class SSHConnection extends Connection {
         try {
             channel = session.openChannel("exec");
             ((ChannelExec) channel).setCommand(cmd);
-            //channel.setInputStream(null);
+            // channel.setInputStream(null);
             ((ChannelExec) channel).setErrStream(System.err);
             InputStream in = channel.getInputStream();
             channel.connect();
-            byte[] tmp=new byte[1024];
-            while(true){
-              while(in.available()>0){
-                int i=in.read(tmp, 0, 1024);
-                if(i<0)break;
-                System.out.print(new String(tmp, 0, i));
-              }
-              if(channel.isClosed()){
-                if(in.available()>0) continue; 
-                System.out.println("exit-status: "+channel.getExitStatus());
-                break;
-              }
-              try{Thread.sleep(1000);}catch(Exception ee){}
+            byte[] tmp = new byte[1024];
+            StringBuffer sb = new StringBuffer();
+            while (true) {
+                
+                while (in.available() > 0) {
+                    int readLength = in.read(tmp, 0, 1024);
+                    if (readLength < 0)
+                        break;
+                    String data = new String(tmp, 0, readLength);
+                    sb.append(data);
+                }
+                if (channel.isClosed()) {
+                    if (in.available() > 0)
+                        continue;
+                    System.out.println("exit-status: " + channel.getExitStatus());
+                    break;
+                }
+                try {
+                    Thread.sleep(500);
+                } catch (Exception ee) {
+                }
             }
+            return sb.toString();
         } catch (Exception e) {
             // TODO: handle exception
         } finally {
-            //channel.disconnect();
+            channel.disconnect();
             close();
         }
+        return null;
     }
 
     @Override
@@ -75,11 +85,11 @@ public class SSHConnection extends Connection {
         try {
             session = jsch.getSession(super.username, super.host, super.port);
             session.setPassword(password);
-            
-            java.util.Properties config = new java.util.Properties(); 
+
+            java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
             session.setConfig(config);
-            
+
             session.connect();
         } catch (JSchException e) {
             logger.error(e.getMessage());

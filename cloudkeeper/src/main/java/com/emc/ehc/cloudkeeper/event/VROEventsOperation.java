@@ -21,7 +21,7 @@ public class VROEventsOperation {
         ExponentialBackoffRetry retryPolicy = new ExponentialBackoffRetry(1000, 3);
         client = CuratorFrameworkFactory.newClient("127.0.0.1:2181", retryPolicy);
         client.start();
-        VROEvents.vROServiceShutDown(client, PATH);
+        new VROEvents().vROServiceShutDown(client, PATH);
         Thread.sleep(10000);
         
         test();

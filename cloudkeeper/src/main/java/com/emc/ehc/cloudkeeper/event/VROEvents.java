@@ -9,6 +9,9 @@ import org.apache.curator.framework.api.CuratorListener;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 
+import com.emc.ehc.cloudkeeper.connection.SSHConnection;
+import com.emc.ehc.cloudkeeper.vRO.VROConnection;
+
 /**
  * @author Nick Zhu E-mail: nick.zhu@emc.com
  * @version build time：Jul 30, 2016 11:10:25 PM
@@ -16,7 +19,14 @@ import org.apache.curator.framework.recipes.cache.NodeCacheListener;
  */
 public class VROEvents {
 
-    public static void vROServiceShutDown(final CuratorFramework client, final String path) throws Exception {
+    private VROConnection vROConnection;
+    
+    public void register(VROConnection vROConnection) {
+        this.vROConnection = vROConnection;
+        
+    }
+
+    public void vROServiceShutDown(final CuratorFramework client, final String path) throws Exception {
         /**
          * 在注册监听器的时候，如果传入此参数，当事件触发时，逻辑由线程池处理
          */
@@ -31,11 +41,27 @@ public class VROEvents {
 
             public void nodeChanged() throws Exception {
                 byte[] payload = client.getData().forPath(path);
-                System.out.println(payload.toString());
+                String info = new String(payload);
+                System.out.println(info);
                 System.out.println("Nick Watcher Test");
+                
+                if("false".equals(info)) {
+                    String cmd = "service vco-server restart";
+                    SSHConnection vROSsh = vROConnection.getSshConnection();
+                    vROSsh.exec(cmd);
+                    
+                    cmd = "chkconfig vco-server";
+                    for(int i = 0; i < 10; i++) {
+                        String result = vROSsh.exec(cmd);
+                        if(result.contains("on")) {
+                            client.setData().forPath(path, "true".getBytes());
+                            break;
+                        }
+                    }
+                }
             }
         };
-        nodeCache.getListenable().addListener(listener);//, pool);
+        nodeCache.getListenable().addListener(listener, pool);
         
     }
 }
