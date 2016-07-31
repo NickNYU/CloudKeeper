@@ -64,7 +64,7 @@ public class SSHConnection extends Connection {
         } catch (Exception e) {
             // TODO: handle exception
         } finally {
-            //channel.disconnect();
+            channel.disconnect();
             close();
         }
     }
