@@ -50,14 +50,7 @@ public class VROEvents {
                     SSHConnection vROSsh = vROConnection.getSshConnection();
                     vROSsh.exec(cmd);
                     
-                    cmd = "chkconfig vco-server";
-                    for(int i = 0; i < 10; i++) {
-                        String result = vROSsh.exec(cmd);
-                        if(result.contains("on")) {
-                            client.setData().forPath(path, "true".getBytes());
-                            break;
-                        }
-                    }
+                    client.setData().forPath(path, "true".getBytes());
                 }
             }
         };
