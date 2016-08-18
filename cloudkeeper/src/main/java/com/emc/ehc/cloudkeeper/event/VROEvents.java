@@ -45,6 +45,7 @@ public class VROEvents {
                 System.out.format("The health status of vRO is : %s\n", info);
                 
                 if("false".equals(info)) {
+                	Thread.sleep(30000);
                     String cmd = "service vco-server restart";
                     SSHConnection vROSsh = vROConnection.getSshConnection();
                     vROSsh.exec(cmd);
