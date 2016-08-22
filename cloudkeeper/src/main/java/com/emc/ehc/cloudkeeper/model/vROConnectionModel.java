@@ -8,6 +8,13 @@ import java.io.Serializable;
  * 
  */
 public class vROConnectionModel implements Serializable {
+    
+    
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8500368346827216268L;
+
     private String name;
     
     private String host;

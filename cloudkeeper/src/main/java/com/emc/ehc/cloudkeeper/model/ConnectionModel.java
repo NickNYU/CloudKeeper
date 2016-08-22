@@ -9,6 +9,11 @@ import java.io.Serializable;
  */
 public class ConnectionModel implements Serializable {
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7490114831839929701L;
+
     private String host;
 
     private String username;
