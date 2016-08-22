@@ -42,7 +42,7 @@ public class TestVROConnectionFail {
     
     public static void registerWatcher(VROConnection vROConnection, CuratorFramework client) throws Exception {
         
-        String path = "/EHC/dev19/vRO/" + vROConnection.getHost() + "/health";
+        String path = "/EHC/vRO/" + vROConnection.getHost() + "/health";
         ZooKeeperClientUtil.createNode(client, path, "true".getBytes());
         
         vROConnection.getvROWatcher().vROServiceShutDown(client, path);

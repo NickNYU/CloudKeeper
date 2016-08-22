@@ -58,7 +58,7 @@ public class vROConnectionController {
         if (!client.isStarted()) {
             client.start();
         }
-        String path = "/EHC/dev19/vRO/" + vro.getName();
+        String path = "/EHC/vRO/" + vro.getName();
         ZooKeeperClientUtil.createNode(client, path);
         byte[] payload = Object2ByteUtils.serialize(vro);
         client.setData().forPath(path, payload);
@@ -68,7 +68,7 @@ public class vROConnectionController {
         if (!client.isStarted()) {
             client.start();
         }
-        String path = "/EHC/dev19/vRO/" + name;
+        String path = "/EHC/vRO/" + name;
         boolean pathExist = ZooKeeperClientUtil.isPathExist(client, path);
         if (!pathExist) {
             return null;
