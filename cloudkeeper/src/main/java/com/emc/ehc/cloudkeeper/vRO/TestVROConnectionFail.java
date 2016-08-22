@@ -21,7 +21,7 @@ import com.emc.ehc.cloudkeeper.connection.SSHConnection;
 */
 public class TestVROConnectionFail {
     
-    public static void main(String[] args) throws Exception {
+   /* public static void main(String[] args) throws Exception {
         
         String host = "10.103.201.79";
         String username = "root";
@@ -38,7 +38,7 @@ public class TestVROConnectionFail {
         
         new Thread(new VROHealthCheck(client, vROConnection)).start();
         
-    }
+    }*/
     
     public static void registerWatcher(VROConnection vROConnection, CuratorFramework client) throws Exception {
         

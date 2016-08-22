@@ -31,7 +31,7 @@ import com.emc.ehc.cloudkeeper.vRO.VROConnection;
 public class vROConnectionController {
     static Map<String, vROConnectionModel> vros = Collections.synchronizedMap(new HashMap<String, vROConnectionModel>());
 
-    private static CuratorFramework client = ClientFactory.getSimpleClient("127.0.0.1:2181");
+    private static CuratorFramework client = ClientFactory.getSimpleClient("10.102.7.76:2181");
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public List<vROConnectionModel> getUserList() {
@@ -48,6 +48,21 @@ public class vROConnectionController {
     @RequestMapping(value = "/{name}", method = RequestMethod.GET)
     public vROConnectionModel getVRO(@PathVariable String name) throws Exception {
         return get(name);
+    }
+
+    @RequestMapping(value = "/{name}/health", method = RequestMethod.GET)
+    public boolean getVROStatus(@PathVariable String name) throws Exception {
+        if (!client.isStarted()) {
+            client.start();
+        }
+        String path = "/EHC/vRO/" + name + "/health";
+        boolean pathExist = ZooKeeperClientUtil.isPathExist(client, path);
+        if (!pathExist) {
+            return false;
+        }
+        byte[] payload = client.getData().forPath(path);
+        String info = new String(payload);
+        return info.equalsIgnoreCase("true");
     }
 
     private void store(vROConnectionModel vro) throws Exception {
