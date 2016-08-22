@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.emc.ehc.cloudkeeper.client.factory.ZooKeeperClientUtil;
 import com.emc.ehc.cloudkeeper.connection.RestClientFactory;
+import com.emc.ehc.cloudkeeper.model.vROConnectionModel;
 
 /**
  * @author Nick Zhu E-mail: nick.zhu@emc.com
@@ -21,64 +22,64 @@ import com.emc.ehc.cloudkeeper.connection.RestClientFactory;
  * 
  */
 public class VROHealthCheck implements Runnable {
-	CuratorFramework client;
-	VROConnection vROConnection;
+    CuratorFramework client;
+    vROConnectionModel vro;
 
-	private final static Logger logger = LoggerFactory.getLogger(VROHealthCheck.class);
+    private final static Logger logger = LoggerFactory.getLogger(VROHealthCheck.class);
 
-	public VROHealthCheck(CuratorFramework client, VROConnection vROConnection) throws Exception {
-		this.client = client;
-		this.vROConnection = vROConnection;
-	}
+    public VROHealthCheck(CuratorFramework client, vROConnectionModel vro) throws Exception {
+        this.client = client;
+        this.vro = vro;
+    }
 
-	public void run() {
+    public void run() {
 
-		while (true) {
+        while (true) {
 
-			String info = null;
-			String username = vROConnection.getUsername();
-			String password = vROConnection.getPassword();
-			Client restClient = RestClientFactory.createClient(username, password);
+            String info = null;
+            String username = vro.getUsername();
+            String password = vro.getPassword();
+            Client restClient = RestClientFactory.createClient(username, password);
 
-			try {
-				// VRO health status API
+            try {
+                // VRO health status API
 
-				// https://your_orchestrator_server_IP_or_DNS_name:8281/vco/api/about
-				String hostPort = this.vROConnection.getHost() + ":8281";
-				Response response = restClient.target("https://" + hostPort + "/vco/api/about")
-						.request(MediaType.APPLICATION_JSON).get();
+                // https://your_orchestrator_server_IP_or_DNS_name:8281/vco/api/about
+                String hostPort = this.vro.getHost() + ":8281";
+                Response response = restClient.target("https://" + hostPort + "/vco/api/about")
+                        .request(MediaType.APPLICATION_JSON).get();
 
-				System.out.println(response.getStatus());
-				if (response.getStatus() != 200) {
-					String path = "/EHC/dev19/vRO/" + vROConnection.getHost() + "/health";
-					client.setData().forPath(path, "false".getBytes());
-				} else {
-					String path = "/EHC/dev19/vRO/" + vROConnection.getHost() + "/Config";
-					String payload = response.readEntity(String.class);
-					if (ZooKeeperClientUtil.isPathExist(client, path)) {
-						//if (!payload.equalsIgnoreCase(new String(client.getData().forPath(path)))) {
-						client.setData().forPath(path, payload.getBytes());
-						//}
-					} else {
-						ZooKeeperClientUtil.createNode(client, path, payload.getBytes());
-					}
-				}
+                System.out.println(response.getStatus());
+                if (response.getStatus() != 200) {
+                    String path = "/EHC/vRO/" + vro.getName() + "/status";
+                    client.setData().forPath(path, "false".getBytes());
+                } else {
+                    String path = "/EHC/vRO/" + vro.getName() + "/Config";
+                    String payload = response.readEntity(String.class);
+                    if (ZooKeeperClientUtil.isPathExist(client, path)) {
+                        // if (!payload.equalsIgnoreCase(new String(client.getData().forPath(path)))) {
+                        client.setData().forPath(path, payload.getBytes());
+                        // }
+                    } else {
+                        ZooKeeperClientUtil.createNode(client, path, payload.getBytes());
+                    }
+                }
 
-				Thread.sleep(10000);
+                Thread.sleep(10000);
 
-			} catch (Exception e) {
+            } catch (Exception e) {
 
-				String path = "/EHC/dev19/vRO/" + vROConnection.getHost() + "/health";
-				try {
-					client.setData().forPath(path, "false".getBytes());
-					run();
-				} catch (Exception e1) {
-					logger.error("Exception occurred when set data for zookeeper vRO/Config : ", e);
-				}
+                String path = "/EHC/vRO/" + vro.getName() + "/status";
+                try {
+                    client.setData().forPath(path, "false".getBytes());
+                    run();
+                } catch (Exception e1) {
+                    logger.error("Exception occurred when set data for zookeeper vRO/Config : ", e);
+                }
 
-			}
+            }
 
-		}
+        }
 
-	}
+    }
 }

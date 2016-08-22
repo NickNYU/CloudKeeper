@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.curator.framework.CuratorFramework;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,9 +18,13 @@ import com.emc.ehc.cloudkeeper.client.factory.ClientFactory;
 import com.emc.ehc.cloudkeeper.client.factory.ZooKeeperClientUtil;
 import com.emc.ehc.cloudkeeper.connection.SSHConnection;
 import com.emc.ehc.cloudkeeper.controller.utils.Object2ByteUtils;
+import com.emc.ehc.cloudkeeper.event.VROEventWatcher;
 import com.emc.ehc.cloudkeeper.model.User;
+import com.emc.ehc.cloudkeeper.model.VRORegisterResponse;
+import com.emc.ehc.cloudkeeper.model.ZooKeeperServerModel;
 import com.emc.ehc.cloudkeeper.model.vROConnectionModel;
 import com.emc.ehc.cloudkeeper.vRO.VROConnection;
+import com.emc.ehc.cloudkeeper.vRO.VROHealthCheck;
 
 /**
  * @author Nick Zhu E-mail: nick.zhu@emc.com
@@ -29,20 +34,32 @@ import com.emc.ehc.cloudkeeper.vRO.VROConnection;
 @RestController
 @RequestMapping(value = "/vRO")
 public class vROConnectionController {
-    static Map<String, vROConnectionModel> vros = Collections.synchronizedMap(new HashMap<String, vROConnectionModel>());
 
-    private static CuratorFramework client = ClientFactory.getSimpleClient("10.102.7.76:2181");
+    @Autowired
+    private static ZooKeeperServerModel zkServer;
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public List<vROConnectionModel> getUserList() {
-        List<vROConnectionModel> r = new ArrayList<vROConnectionModel>(vros.values());
-        return r;
-    }
+    private static CuratorFramework client = ClientFactory.getSimpleClient(zkServer.getHost() + ":" + zkServer.getPort());
+
+    /*
+     * @RequestMapping(value = "", method = RequestMethod.GET)
+     * public List<vROConnectionModel> getUserList() {
+     * List<vROConnectionModel> r = new ArrayList<vROConnectionModel>(vros.values());
+     * return r;
+     * }
+     */
 
     @RequestMapping(value = "", method = RequestMethod.POST)// headers = {"content-type=application/json"},
-    public String postUser(@RequestBody vROConnectionModel vro) throws Exception {
-        store(vro);
-        return "success";
+    public VRORegisterResponse postUser(@RequestBody vROConnectionModel vro) {
+        try {
+            String path = "/EHC/vRO/" + vro.getName();
+            if(!ZooKeeperClientUtil.isPathExist(client, path)) {
+                store(vro);
+                registerWatcher(vro);
+            }
+            return new VRORegisterResponse(vro.getName(), vro.getHost(), true);
+        } catch (Exception e) {
+            return new VRORegisterResponse(vro.getName(), vro.getHost(), false);
+        }
     }
 
     @RequestMapping(value = "/{name}", method = RequestMethod.GET)
@@ -50,12 +67,12 @@ public class vROConnectionController {
         return get(name);
     }
 
-    @RequestMapping(value = "/{name}/health", method = RequestMethod.GET)
+    @RequestMapping(value = "/{name}/status", method = RequestMethod.GET)
     public boolean getVROStatus(@PathVariable String name) throws Exception {
         if (!client.isStarted()) {
             client.start();
         }
-        String path = "/EHC/vRO/" + name + "/health";
+        String path = "/EHC/vRO/" + name + "/status";
         boolean pathExist = ZooKeeperClientUtil.isPathExist(client, path);
         if (!pathExist) {
             return false;
@@ -91,5 +108,14 @@ public class vROConnectionController {
         byte[] payload = client.getData().forPath(path);
         vROConnectionModel vro = (vROConnectionModel) Object2ByteUtils.deserialize(payload);
         return vro;
+    }
+
+    private void registerWatcher(vROConnectionModel vro) throws Exception {
+
+        String path = "/EHC/vRO/" + vro.getName() + "/status";
+        ZooKeeperClientUtil.createNode(client, path, "true".getBytes());
+
+        VROEventWatcher.vROServiceShutDown(client, vro);
+        new Thread(new VROHealthCheck(client, vro)).start();
     }
 }

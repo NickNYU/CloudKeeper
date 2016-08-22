@@ -9,6 +9,7 @@ import org.apache.curator.framework.api.CuratorListener;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 
+import com.emc.ehc.cloudkeeper.client.factory.ZooKeeperClientUtil;
 import com.emc.ehc.cloudkeeper.connection.SSHConnection;
 import com.emc.ehc.cloudkeeper.model.ConnectionModel;
 import com.emc.ehc.cloudkeeper.model.vROConnectionModel;
@@ -21,16 +22,17 @@ import com.emc.ehc.cloudkeeper.vRO.VROConnection;
  */
 public class VROEventWatcher {
 
-    public void vROServiceShutDown(final CuratorFramework client, vROConnectionModel vro) throws Exception {
+    public static void vROServiceShutDown(final CuratorFramework client, vROConnectionModel vro) throws Exception {
         /**
          * 在注册监听器的时候，如果传入此参数，当事件触发时，逻辑由线程池处理
          */
         ExecutorService pool = Executors.newFixedThreadPool(2);
-
+        
         /**
          * 监听数据节点的变化情况
          */
         String path = "/EHC/vRO/" + vro.getName() + "/status";
+        
         final NodeCache nodeCache = new NodeCache(client, path, false);
         nodeCache.start(true);
         NodeCacheListener listener = new NodeCacheListener() {
