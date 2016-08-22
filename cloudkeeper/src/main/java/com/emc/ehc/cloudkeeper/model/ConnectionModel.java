@@ -1,11 +1,13 @@
 package com.emc.ehc.cloudkeeper.model;
 
+import java.io.Serializable;
+
 /**
  * @author Nick Zhu E-mail: nick.zhu@emc.com
  * @version build time：Aug 18, 2016 4:14:11 PM
  * 
  */
-public class ConnectionModel {
+public class ConnectionModel implements Serializable {
     
     private String host;
 
