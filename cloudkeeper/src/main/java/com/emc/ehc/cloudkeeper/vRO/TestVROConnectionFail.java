@@ -27,7 +27,7 @@ public class TestVROConnectionFail {
         String username = "root";
         String password = "Emsee123!";
         SSHConnection ssh = new SSHConnection(host, username, password);
-        VROConnection vROConnection = new VROConnection(host, "app_vco_vcenter@ppindigo.lab.local", password);
+        VROConnection vROConnection = new VROConnection("", host, "app_vco_vcenter@ppindigo.lab.local", password);
         vROConnection.setSshConnection(ssh);
         
         CuratorFramework client = ClientFactory.getSimpleClient("127.0.0.1:2181");

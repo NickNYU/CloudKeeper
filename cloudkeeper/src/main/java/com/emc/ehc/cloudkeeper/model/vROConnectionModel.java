@@ -6,6 +6,8 @@ package com.emc.ehc.cloudkeeper.model;
  * 
  */
 public class vROConnectionModel {
+    private String name;
+    
     private String host;
 
     private String username;
@@ -44,6 +46,14 @@ public class vROConnectionModel {
 
     public void setSshConnection(ConnectionModel sshConnection) {
         this.sshConnection = sshConnection;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

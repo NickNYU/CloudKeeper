@@ -12,6 +12,7 @@ import com.emc.ehc.cloudkeeper.event.VROEvents;
 public class VROConnection extends Connection {
     
     private final static int PORT = 8281;
+    private String name;
     private SSHConnection sshConnection;
     private VROEvents vROWatcher = new VROEvents();
     
@@ -22,7 +23,7 @@ public class VROConnection extends Connection {
         super();
         vROWatcher.register(this);
     }
-    public VROConnection(String host, String username, String password) {
+    public VROConnection(String name, String host, String username, String password) {
         super(host, PORT, username, password);
         vROWatcher.register(this);
     }
@@ -35,6 +36,12 @@ public class VROConnection extends Connection {
     }
     
     
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
     @Override
     public void connect() {
         // TODO Auto-generated method stub
