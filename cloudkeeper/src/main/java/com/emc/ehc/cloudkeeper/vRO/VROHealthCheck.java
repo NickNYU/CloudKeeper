@@ -49,30 +49,25 @@ public class VROHealthCheck implements Runnable {
                 Response response = restClient.target("https://" + hostPort + "/vco/api/about")
                         .request(MediaType.APPLICATION_JSON).get();
 
-                System.out.println(response.getStatus());
-                if (response.getStatus() != 200) {
-                    String path = "/EHC/vRO/" + vro.getName() + "/status";
-                    client.setData().forPath(path, "false".getBytes());
+                System.out.println("vRO health check : " + response.getStatus());
+                String path = "/EHC/vRO/" + vro.getName() + "/status";
+                if (response.getStatus() == 200) {
+                    client.setData().forPath(path, "true".getBytes());
+
                 } else {
-                    String path = "/EHC/vRO/" + vro.getName() + "/Config";
-                    String payload = response.readEntity(String.class);
-                    if (ZooKeeperClientUtil.isPathExist(client, path)) {
-                        // if (!payload.equalsIgnoreCase(new String(client.getData().forPath(path)))) {
-                        client.setData().forPath(path, payload.getBytes());
-                        // }
-                    } else {
-                        ZooKeeperClientUtil.createNode(client, path, payload.getBytes());
-                    }
+                    client.setData().forPath(path, "false".getBytes());
                 }
 
-                Thread.sleep(10000);
+                Thread.sleep(5000);
 
             } catch (Exception e) {
 
                 String path = "/EHC/vRO/" + vro.getName() + "/status";
                 try {
                     client.setData().forPath(path, "false".getBytes());
-                    run();
+                    // run();
+                    Thread.sleep(2000);
+                    continue;
                 } catch (Exception e1) {
                     logger.error("Exception occurred when set data for zookeeper vRO/Config : ", e);
                 }

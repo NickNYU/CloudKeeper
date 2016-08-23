@@ -79,11 +79,16 @@ public class vROConnectionController {
     }
 
     @RequestMapping(value = "/{name}/status", method = RequestMethod.GET)
-    public VroStatusResponse VroStatusResponse(@PathVariable String name) throws Exception {
+    public VroStatusResponse VroStatusResponse(@PathVariable String name) {
         if (!client.isStarted()) {
             client.start();
         }
-        vROConnectionModel vro = get(name);
+        vROConnectionModel vro = null;
+        try {
+            vro = get(name);
+        } catch(Exception e) {
+            return new VroStatusResponse(name, "unkown host", false);
+        }
         boolean status = true;
         String path = "/EHC/vRO/" + name + "/status";
         try {
