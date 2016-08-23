@@ -23,6 +23,7 @@ import com.emc.ehc.cloudkeeper.model.User;
 import com.emc.ehc.cloudkeeper.model.VRORegisterResponse;
 import com.emc.ehc.cloudkeeper.model.ZooKeeperServerModel;
 import com.emc.ehc.cloudkeeper.model.vROConnectionModel;
+import com.emc.ehc.cloudkeeper.model.VroStatusResponse;
 import com.emc.ehc.cloudkeeper.vRO.VROConnection;
 import com.emc.ehc.cloudkeeper.vRO.VROHealthCheck;
 
@@ -35,11 +36,14 @@ import com.emc.ehc.cloudkeeper.vRO.VROHealthCheck;
 @RequestMapping(value = "/vRO")
 public class vROConnectionController {
 
-    @Autowired
-    private static ZooKeeperServerModel zkServer;
+    // private static ZooKeeperServerModel zkServer;
 
-    private static CuratorFramework client = ClientFactory.getSimpleClient(zkServer.getHost() + ":" + zkServer.getPort());
+    private static CuratorFramework client;
 
+    static {
+        client = ClientFactory.getSimpleClient("10.102.7.76:2181");
+        client.start();
+    }
     /*
      * @RequestMapping(value = "", method = RequestMethod.GET)
      * public List<vROConnectionModel> getUserList() {
@@ -50,43 +54,54 @@ public class vROConnectionController {
 
     @RequestMapping(value = "", method = RequestMethod.POST)// headers = {"content-type=application/json"},
     public VRORegisterResponse postUser(@RequestBody vROConnectionModel vro) {
+        if (!client.isStarted()) {
+            client.start();
+        }
         try {
             String path = "/EHC/vRO/" + vro.getName();
-            if(!ZooKeeperClientUtil.isPathExist(client, path)) {
+            if (!ZooKeeperClientUtil.isPathExist(client, path)) {
                 store(vro);
                 registerWatcher(vro);
             }
             return new VRORegisterResponse(vro.getName(), vro.getHost(), true);
         } catch (Exception e) {
+            e.printStackTrace();
             return new VRORegisterResponse(vro.getName(), vro.getHost(), false);
         }
     }
 
     @RequestMapping(value = "/{name}", method = RequestMethod.GET)
     public vROConnectionModel getVRO(@PathVariable String name) throws Exception {
+        if (!client.isStarted()) {
+            client.start();
+        }
         return get(name);
     }
 
     @RequestMapping(value = "/{name}/status", method = RequestMethod.GET)
-    public boolean getVROStatus(@PathVariable String name) throws Exception {
+    public VroStatusResponse VroStatusResponse(@PathVariable String name) throws Exception {
         if (!client.isStarted()) {
             client.start();
         }
+        vROConnectionModel vro = get(name);
+        boolean status = true;
         String path = "/EHC/vRO/" + name + "/status";
-        boolean pathExist = ZooKeeperClientUtil.isPathExist(client, path);
-        if (!pathExist) {
-            return false;
+        try {
+            boolean pathExist = ZooKeeperClientUtil.isPathExist(client, path);
+            if (!pathExist) {
+                status = false;
+            }
+            byte[] payload = client.getData().forPath(path);
+            String info = new String(payload);
+            status = info.equalsIgnoreCase("true");
+
+            return new VroStatusResponse(name, vro.getHost(), status);
+        } catch (Exception e) {
+            return new VroStatusResponse(name, vro.getHost(), false);
         }
-        byte[] payload = client.getData().forPath(path);
-        String info = new String(payload);
-        return info.equalsIgnoreCase("true");
     }
 
     private void store(vROConnectionModel vro) throws Exception {
-        VROConnection vroConnect = new VROConnection(vro.getName(), vro.getHost(), vro.getUsername(), vro.getPassword());
-        SSHConnection sshConnect = new SSHConnection(vro.getSshConnection().getHost(), vro.getSshConnection().getUsername(),
-                vro.getSshConnection().getPassword());
-        vroConnect.setSshConnection(sshConnect);
         if (!client.isStarted()) {
             client.start();
         }

@@ -2,6 +2,7 @@ C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\App.jav
 C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\controller\vROConnectionController.java
 C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\client\factory\ZooKeeperClientUtil.java
 C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\connection\RestClientFactory.java
+C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\model\VroStatusResponse.java
 C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\client\factory\ClientFactory.java
 C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\exception\ConnectionException.java
 C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\controller\UserController.java
@@ -9,8 +10,11 @@ C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\vRO\Tes
 C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\vRO\VROConnection.java
 C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\connection\SSHConnection.java
 C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\model\vROConnectionModel.java
+C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\model\VRORegisterResponse.java
 C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\exception\package-info.java
+C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\model\ZooKeeperServerModel.java
 C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\connection\Connection.java
+C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\event\VROEventWatcher.java
 C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\model\ConnectionModel.java
 C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\model\User.java
 C:\Develop\CloudKeeper\cloudkeeper\src\main\java\com\emc\ehc\cloudkeeper\controller\HelloController.java
