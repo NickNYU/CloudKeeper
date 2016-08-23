@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: com.emc.ehc.cloudkeeper.ApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.047 sec <<< FAILURE! - in com.emc.ehc.cloudkeeper.ApplicationTests
+com.emc.ehc.cloudkeeper.ApplicationTests.testUserController()  Time elapsed: 0.047 sec  <<< FAILURE!
+java.lang.NullPointerException
+	at com.emc.ehc.cloudkeeper.ApplicationTests.testUserController(ApplicationTests.java:57)
+
