@@ -14,6 +14,7 @@ import com.emc.ehc.cloudkeeper.connection.SSHConnection;
 import com.emc.ehc.cloudkeeper.model.ConnectionModel;
 import com.emc.ehc.cloudkeeper.model.vROConnectionModel;
 import com.emc.ehc.cloudkeeper.vRO.VROConnection;
+import com.emc.ehc.cloudkeeper.vRO.VROHealthCheck;
 
 /**
  * @author Nick Zhu E-mail: nick.zhu@emc.com
@@ -51,7 +52,8 @@ public class VROEventWatcher {
 
                     vROSsh.exec(cmd);
 
-                    //client.setData().forPath(path, "true".getBytes());
+                    client.setData().forPath(path, "true".getBytes());
+                    new Thread(new VROHealthCheck(client, vro)).start();
                 }
             }
         };

@@ -65,9 +65,9 @@ public class VROHealthCheck implements Runnable {
                 String path = "/EHC/vRO/" + vro.getName() + "/status";
                 try {
                     client.setData().forPath(path, "false".getBytes());
-                    // run();
-                    Thread.sleep(2000);
-                    continue;
+                    //run();
+                    //Thread.sleep(2000);
+                    //continue;
                 } catch (Exception e1) {
                     logger.error("Exception occurred when set data for zookeeper vRO/Config : ", e);
                 }
