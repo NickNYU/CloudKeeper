@@ -1,4 +1,4 @@
-package com.emc.ehc.cloudkeeper.controller.utils;
+package com.emc.ehc.cloudkeeper.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -21,7 +21,7 @@ public class Object2ByteUtils {
     
     public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
         ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is = new ObjectInputStream(in);
-        return is.readObject();
+        ObjectInputStream inputStream = new ObjectInputStream(in);
+        return inputStream.readObject();
     }
 }
