@@ -1,13 +1,11 @@
-package com.emc.ehc.cloudkeeper.connection;
+package com.emc.ehc.cloudkeeper.utils;
 
 import java.io.InputStream;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.emc.ehc.cloudkeeper.model.SshConnection;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -15,29 +13,22 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 /**
- * @author Nick Zhu E-mail: nick.zhu@emc.com
- * @version build time：Jul 30, 2016 6:21:00 PM
- * 
- */
-public class SSHConnection extends Connection {
-
+* @author Nick Zhu E-mail: nick.zhu@emc.com
+* @version build time：Aug 31, 2016 9:50:31 AM
+* 
+*/
+public class SshUtils {
+    
+    private final static Logger logger = LoggerFactory.getLogger(SshUtils.class);
+    
     private final static int PORT = 22;
-    private Session session;
-    private JSch jsch = new JSch();
-
-    private static Logger logger = LoggerFactory.getLogger(SSHConnection.class);
-
-    public SSHConnection() {
-        super();
-    }
-
-    public SSHConnection(String host, String username, String password) {
-        super(host, PORT, username, password);
-    }
-
-    public String exec(String cmd) {
+    private static Session session;
+    private static JSch jsch = new JSch();
+    
+    
+    public static String exec(SshConnection ssh, String cmd) {
         if (session == null || !isConnected()) {
-            connect();
+            connect(ssh);
         }
         Channel channel = null;
         try {
@@ -78,13 +69,12 @@ public class SSHConnection extends Connection {
         }
         return null;
     }
-
-    @Override
-    public void connect() {
+    
+    private static void connect(SshConnection ssh) {
 
         try {
-            session = jsch.getSession(super.username, super.host, super.port);
-            session.setPassword(password);
+            session = jsch.getSession(ssh.getUsername(), ssh.getHost(), PORT);
+            session.setPassword(ssh.getPassword());
 
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
@@ -96,14 +86,13 @@ public class SSHConnection extends Connection {
         }
     }
 
-    @Override
-    public void close() {
+    
+    private static void close() {
         session.disconnect();
     }
 
-    @Override
-    public boolean isConnected() {
+    
+    private static boolean isConnected() {
         return session.isConnected();
     }
-
 }

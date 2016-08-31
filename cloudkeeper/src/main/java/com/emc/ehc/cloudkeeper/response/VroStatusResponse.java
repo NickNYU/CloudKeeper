@@ -1,20 +1,19 @@
-package com.emc.ehc.cloudkeeper.model;
+package com.emc.ehc.cloudkeeper.response;
 
 /**
  * @author Nick Zhu E-mail: nick.zhu@emc.com
- * @version build time：Aug 22, 2016 6:02:36 PM
+ * @version build time：Aug 26, 2016 9:17:34 PM
  * 
  */
-public class VRORegisterResponse {
+public class VroStatusResponse {
     private String name;
     private String hostname;
-    private boolean registered;
-    
-    public VRORegisterResponse(String name, String hostname, boolean register) {
-        super();
+    private boolean healthy;
+
+    public VroStatusResponse(String name, String hostname, boolean healthy) {
         this.name = name;
         this.hostname = hostname;
-        this.registered = register;
+        this.healthy = healthy;
     }
 
     public String getName() {
@@ -33,12 +32,12 @@ public class VRORegisterResponse {
         this.hostname = hostname;
     }
 
-    public boolean isRegistered() {
-        return registered;
+    public boolean isHealthy() {
+        return healthy;
     }
 
-    public void setRegistered(boolean registered) {
-        this.registered = registered;
+    public void setHealthy(boolean healthy) {
+        this.healthy = healthy;
     }
 
 }

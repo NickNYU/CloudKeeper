@@ -1,4 +1,4 @@
-package com.emc.ehc.cloudkeeper.connection;
+package com.emc.ehc.cloudkeeper.factory;
 /**
 * @author Nick Zhu E-mail: nick.zhu@emc.com
 * @version build time：Aug 1, 2016 2:46:05 PM
@@ -94,6 +94,11 @@ public class RestClientFactory {
         final Client client = configureClient();
         final HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(userName, password);
         client.register(feature);
+        return client;
+    }
+    
+    public static Client createClient() {
+        final Client client = configureClient();
         return client;
     }
 }

@@ -4,21 +4,28 @@ import java.io.Serializable;
 
 /**
  * @author Nick Zhu E-mail: nick.zhu@emc.com
- * @version build time：Aug 18, 2016 4:14:11 PM
+ * @version build time：Aug 26, 2016 11:45:16 AM
  * 
  */
-public class ConnectionModel implements Serializable {
-    
+
+public class Vro implements Serializable {
     /**
      * 
      */
-    private static final long serialVersionUID = 7490114831839929701L;
-
+    private static final long serialVersionUID = -640861659259119341L;
+    private String name;
     private String host;
-
     private String username;
-    
     private String password;
+    private SshConnection sshConnection;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getHost() {
         return host;
@@ -42,6 +49,14 @@ public class ConnectionModel implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public SshConnection getSshConnection() {
+        return sshConnection;
+    }
+
+    public void setSshConnection(SshConnection sshConnection) {
+        this.sshConnection = sshConnection;
     }
 
 }

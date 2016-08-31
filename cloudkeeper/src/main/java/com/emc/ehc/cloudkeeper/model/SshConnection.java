@@ -4,26 +4,18 @@ import java.io.Serializable;
 
 /**
  * @author Nick Zhu E-mail: nick.zhu@emc.com
- * @version build time：Aug 18, 2016 4:17:57 PM
+ * @version build time：Aug 26, 2016 11:50:38 AM
  * 
  */
-public class vROConnectionModel implements Serializable {
-    
-    
+public class SshConnection implements Serializable {
     /**
      * 
      */
-    private static final long serialVersionUID = -8500368346827216268L;
-
-    private String name;
+    private static final long serialVersionUID = 175957882826998875L;
     
     private String host;
-
     private String username;
-
     private String password;
-
-    private ConnectionModel sshConnection;
 
     public String getHost() {
         return host;
@@ -47,22 +39,6 @@ public class vROConnectionModel implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public ConnectionModel getSshConnection() {
-        return sshConnection;
-    }
-
-    public void setSshConnection(ConnectionModel sshConnection) {
-        this.sshConnection = sshConnection;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
 }
