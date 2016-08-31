@@ -20,8 +20,13 @@ public class Object2ByteUtils {
     }
     
     public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
+        try {
         ByteArrayInputStream in = new ByteArrayInputStream(data);
         ObjectInputStream inputStream = new ObjectInputStream(in);
         return inputStream.readObject();
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 }

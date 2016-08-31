@@ -33,7 +33,7 @@ public class ZookeeperService {
     private ZookeeperServer zkServer;
     private CuratorFramework zkClient;
     
-    @PostConstruct
+    @Autowired
     public void init() {
         zkClient = ZookeeperClientFactory.getSimpleClient(getConnection());
         zkClient.start();
@@ -45,12 +45,12 @@ public class ZookeeperService {
     
     public void registerVroWatcher(Vro vro) throws Exception {
         String path = "/EHC/vRO/" + vro.getName() + "/status";
-        ZooKeeperClientUtils.createNode(zkClient, path, "true".getBytes());
-
+        ZooKeeperClientUtils.createNode(zkClient, path);
+        setData(path, "true");
         VROEventWatcher.vROServiceShutDown(zkClient, vro);
     }
     
-    @Async
+    
     public <T extends Serializable> void setData(String path, T t) throws Exception {
         //if(client == null)  init();
         byte[] payload = Object2ByteUtils.serialize(t);
@@ -64,12 +64,11 @@ public class ZookeeperService {
     
     
     public <T extends Serializable> T getData(String path) throws Exception {
-        //if(client == null)  init();
-        byte[] payload = zkClient.getData().forPath(path);
+        if(zkClient == null)  init();
         
+        byte[] payload = zkClient.getData().forPath(path);
         @SuppressWarnings("unchecked")
         T object = (T) Object2ByteUtils.deserialize(payload);
-
         return object;
     }
     

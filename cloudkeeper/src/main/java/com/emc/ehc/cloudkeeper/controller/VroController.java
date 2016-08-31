@@ -2,6 +2,7 @@ package com.emc.ehc.cloudkeeper.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.MediaType;
@@ -23,7 +24,6 @@ import com.emc.ehc.cloudkeeper.response.VroResponse;
 import com.emc.ehc.cloudkeeper.response.VroStatusResponse;
 import com.emc.ehc.cloudkeeper.service.ZookeeperService;
 
-
 /**
  * @author Nick Zhu E-mail: nick.zhu@emc.com
  * @version build time：Aug 26, 2016 11:53:35 AM
@@ -38,7 +38,7 @@ public class VroController {
     @Autowired
     private ZookeeperService zkService;
     private Client restClient = RestClientFactory.createClient();
-    
+    private AtomicInteger counter = new AtomicInteger(0);
 
     @Value("${vro.path}")
     private String basePath;
@@ -59,9 +59,10 @@ public class VroController {
     public Vro getVro(@PathVariable String name) {
         String path = basePath + "/" + name;
         try {
-            return zkService.getData(path);
+            Vro vro = zkService.getData(path);
+            return vro;
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("vRO Controller fail to get vRO : " + name);
             return null;
         }
     }
@@ -89,11 +90,22 @@ public class VroController {
             String path = basePath + "/" + name;
             Vro vro = zkService.getData(path);
             boolean status = getVroHealth(vro);
-            
+
             // Set status to zookeeper server
             String statusPath = path + "/status";
-            zkService.setData(statusPath, status ? "true" : "false");
-            
+            String statusString = status ? "true" : "false";
+            System.out.println(statusString);
+            if (!status) {
+                if (counter.compareAndSet(0, 1)) {
+                    System.out.println(counter.get());
+                    zkService.setData(statusPath, "false");
+                }
+            } else {
+                System.out.println(counter.get());
+                zkService.setData(statusPath, "true");
+                counter.compareAndSet(1, 0);
+            }
+
             return new VroStatusResponse(name, vro.getHost(), status);
         } catch (Exception e) {
             return new VroStatusResponse(name, null, false);
@@ -116,8 +128,6 @@ public class VroController {
         } catch (Exception e) {
             logger.error(e.getMessage());
             return false;
-        } finally {
-            restClient.close();
         }
     }
 }
