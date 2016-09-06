@@ -89,7 +89,13 @@ public class VroController {
             String path = basePath + "/" + name;
             Vro vro = zkService.getData(path);
             boolean status = getVroHealth(vro);
-            
+            // double check here
+            int count = 0;
+            while(!status && count < 2) {
+                Thread.sleep(3000);
+                status = getVroHealth(vro);
+                count ++;
+            }
             // Set status to zookeeper server
             String statusPath = path + "/status";
             zkService.setData(statusPath, status ? "true" : "false");
@@ -116,8 +122,6 @@ public class VroController {
         } catch (Exception e) {
             logger.error(e.getMessage());
             return false;
-        } finally {
-            restClient.close();
         }
     }
 }

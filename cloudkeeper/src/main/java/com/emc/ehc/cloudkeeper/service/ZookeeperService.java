@@ -50,15 +50,15 @@ public class ZookeeperService {
         VROEventWatcher.vROServiceShutDown(zkClient, vro);
     }
     
-    @Async
+    
     public <T extends Serializable> void setData(String path, T t) throws Exception {
         //if(client == null)  init();
         byte[] payload = Object2ByteUtils.serialize(t);
         
-        if(ZooKeeperClientUtils.isPathExist(zkClient, path)) {
-            return;
+        if(!ZooKeeperClientUtils.isPathExist(zkClient, path)) {
+            ZooKeeperClientUtils.createNode(zkClient, path);
         }
-        ZooKeeperClientUtils.createNode(zkClient, path);
+        
         zkClient.setData().forPath(path, payload);
     }
     

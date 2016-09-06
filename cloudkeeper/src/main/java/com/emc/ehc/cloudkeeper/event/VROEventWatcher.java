@@ -11,6 +11,7 @@ import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 
 import com.emc.ehc.cloudkeeper.model.SshConnection;
 import com.emc.ehc.cloudkeeper.model.Vro;
+import com.emc.ehc.cloudkeeper.utils.Object2ByteUtils;
 import com.emc.ehc.cloudkeeper.utils.SshUtils;
 
 /**
@@ -36,8 +37,8 @@ public class VROEventWatcher {
         NodeCacheListener listener = new NodeCacheListener() {
 
             public void nodeChanged() throws Exception {
-                byte[] payload = client.getData().forPath(path);
-                String info = new String(payload);
+                byte[] payload = nodeCache.getCurrentData().getData();
+                String info = (String) Object2ByteUtils.deserialize(payload);
                 System.out.format("The health status of vRO is : %s\n", info);
 
                 if ("false".equals(info)) {
