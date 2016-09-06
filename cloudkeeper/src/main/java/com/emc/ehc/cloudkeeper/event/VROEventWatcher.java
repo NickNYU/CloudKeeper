@@ -49,7 +49,7 @@ public class VROEventWatcher {
                     SshConnection ssh = vro.getSshConnection();
                     SshUtils.exec(ssh, cmd);
 
-                    client.setData().forPath(path, "true".getBytes());
+                    //client.setData().forPath(path, "true".getBytes());
                 }
             }
         };
