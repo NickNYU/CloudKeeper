@@ -26,34 +26,41 @@ public class VROEventWatcher {
          * 在注册监听器的时候，如果传入此参数，当事件触发时，逻辑由线程池处理
          */
         ExecutorService pool = Executors.newFixedThreadPool(2);
-        
+
         /**
          * 监听数据节点的变化情况
          */
         String path = "/EHC/vRO/" + vro.getName() + "/status";
-        
+
         final NodeCache nodeCache = new NodeCache(client, path, false);
-        nodeCache.start(true);
+
         NodeCacheListener listener = new NodeCacheListener() {
+            private volatile boolean status = true;
 
             public void nodeChanged() throws Exception {
                 byte[] payload = nodeCache.getCurrentData().getData();
                 String info = (String) Object2ByteUtils.deserialize(payload);
-                System.out.format("The health status of vRO is : %s\n", info);
+
+                System.out.format("The health status of vRO %s changed as : %s\n", vro.getName(), info);
 
                 if ("false".equals(info)) {
-                    Thread.sleep(30000);
-                    String cmd = "service vco-server restart";
-                    
-                    
-                    SshConnection ssh = vro.getSshConnection();
-                    SshUtils.exec(ssh, cmd);
+                    // Make sure won't restart for serveral times
+                    if (status) {
+                        String cmd = "service vco-server restart";
 
-                    //client.setData().forPath(path, "true".getBytes());
+                        SshConnection ssh = vro.getSshConnection();
+                        SshUtils.exec(ssh, cmd);
+                    }
+
+                    status = false;
+                } else {
+                    status = true;
                 }
             }
         };
         nodeCache.getListenable().addListener(listener, pool);
+
+        nodeCache.start(true);
 
     }
 }

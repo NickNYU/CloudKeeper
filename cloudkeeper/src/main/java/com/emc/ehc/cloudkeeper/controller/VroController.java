@@ -49,8 +49,12 @@ public class VroController {
         try {
             zkService.setData(path, vro);
             zkService.registerVroWatcher(vro);
+            
+            System.out.format("vRO %s is registered successfully \n", vro.getName());
             return new VroResponse(vro.getName(), vro.getHost(), true);
         } catch (Exception e) {
+            System.out.format("vRO %s fail to register \n", vro.getName());
+            e.printStackTrace();
             return new VroResponse(vro.getName(), vro.getHost(), false);
         }
     }

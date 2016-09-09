@@ -19,7 +19,7 @@ public class ZookeeperController {
 
     @Autowired
     private ZookeeperService zkService;
-
+    
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String getInitState() {
         return zkService.getState();
