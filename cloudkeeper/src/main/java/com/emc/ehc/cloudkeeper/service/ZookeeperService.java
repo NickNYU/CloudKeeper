@@ -43,6 +43,7 @@ public class ZookeeperService {
         return zkServer.getHost() + ":" + zkServer.getPort();
     }
     
+    @Async
     public void registerVroWatcher(Vro vro) throws Exception {
         String path = "/EHC/vRO/" + vro.getName() + "/status";
         ZooKeeperClientUtils.createNode(zkClient, path, "true".getBytes());
